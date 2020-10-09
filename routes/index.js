@@ -21,11 +21,11 @@ router.get('/lock', function (req, res) {
       return;림
     }
     console.log(`닫힘: ${stdout}`);
-    res.status(500).send(`success'`);
+    res.status(200).send(`success'`);
   });
 });
 
-router.get('/unlock', function () {
+router.get('/unlock', function (req, res) {
   exec('gpio export 21 high', (error, stdout, stderr) => {
     if (error) {
       res.status(500).send(`Unexpected Error'`);
@@ -38,7 +38,7 @@ router.get('/unlock', function () {
       return;
     }
     console.log(`열: ${stdout}`);
-    res.status(500).send(`success'`);
+    res.status(200).send(`success'`);
   });
 });
 
