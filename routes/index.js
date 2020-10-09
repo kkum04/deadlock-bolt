@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
 router.get('/lock', function (req, res) {
   exec('gpio export 21 high', (error, stdout, stderr) => {
     if (error) {
-      res.status(500).send(`Unexpected Error'`);
+      res.status(500).send(`Unexpected Error`);
       console.log(`error: ${error.message}`);
       return;
     }
@@ -21,24 +21,24 @@ router.get('/lock', function (req, res) {
       return;림
     }
     console.log(`닫힘: ${stdout}`);
-    res.status(200).send(`success'`);
+    res.status(200).send(`success`);
   });
 });
 
 router.get('/unlock', function (req, res) {
   exec('gpio export 21 low', (error, stdout, stderr) => {
     if (error) {
-      res.status(500).send(`Unexpected Error'`);
+      res.status(500).send(`Unexpected Error`);
       console.log(`error: ${error.message}`);
       return;
     }
     if (stderr) {
-      res.status(500).send(`Unexpected Error'`);
+      res.status(500).send(`Unexpected Error`);
       console.log(`stderr: ${stderr}`);
       return;
     }
     console.log(`열: ${stdout}`);
-    res.status(200).send(`success'`);
+    res.status(200).send(`success`);
   });
 });
 
