@@ -8,24 +8,38 @@ router.get('/', function(req, res, next) {
   res.render('index');
 });
 
-const showLog = (error, stdout, stderr) => {
-  if (error) {
-    console.log(`error: ${error.message}`);
-    return;
-  }
-  if (stderr) {
-    console.log(`stderr: ${stderr}`);
-    return;
-  }
-  console.log(`stdout: ${stdout}`);
-}
-
-router.get('/lock', function () {
-  exec('ls -al', showLog);
+router.get('/lock', function (req, res) {
+  exec('gpio export 21 low', (error, stdout, stderr) => {
+    if (error) {
+      res.status(500).send(`Unexpected Error'`);
+      console.log(`error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      res.status(500).send(`Unexpected Error`);
+      console.log(`stderr: ${stderr}`);
+      return;림
+    }
+    console.log(`닫힘: ${stdout}`);
+    res.status(500).send(`success'`);
+  });
 });
 
 router.get('/unlock', function () {
-  exec('ls -al', showLog);
+  exec('gpio export 21 high', (error, stdout, stderr) => {
+    if (error) {
+      res.status(500).send(`Unexpected Error'`);
+      console.log(`error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      res.status(500).send(`Unexpected Error'`);
+      console.log(`stderr: ${stderr}`);
+      return;
+    }
+    console.log(`열: ${stdout}`);
+    res.status(500).send(`success'`);
+  });
 });
 
 module.exports = router;
