@@ -9,7 +9,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/lock', function (req, res) {
-  exec('gpio export 21 low', (error, stdout, stderr) => {
+  exec('gpio export 21 high', (error, stdout, stderr) => {
     if (error) {
       res.status(500).send(`Unexpected Error'`);
       console.log(`error: ${error.message}`);
@@ -26,7 +26,7 @@ router.get('/lock', function (req, res) {
 });
 
 router.get('/unlock', function (req, res) {
-  exec('gpio export 21 high', (error, stdout, stderr) => {
+  exec('gpio export 21 low', (error, stdout, stderr) => {
     if (error) {
       res.status(500).send(`Unexpected Error'`);
       console.log(`error: ${error.message}`);
