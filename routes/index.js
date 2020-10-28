@@ -3,8 +3,9 @@ const { exec } = require("child_process");
 const router = express.Router();
 require('dotenv').config();
 
-const lockControlPinCode = process.env.LOCK_CONTROL_PIN_CODE;
-const doorStatusPinCode = process.env.DOOR_STATUS_PIN_CODE;
+const LOCK_CONTROL_PIN_CODE = process.env.LOCK_CONTROL_PIN_CODE;
+const DOOR_STATUS_PIN_CODE = process.env.DOOR_STATUS_PIN_CODE;
+const AUTO_LOCK_COUNT = process.env.AUTO_LOCK_COUNT;
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -51,12 +52,12 @@ const execWithPromise = async (commandLine) => {
 
 const operateDeadlockBolt = async (isLock) => {
   const operation = isLock === true ? 'high' : 'low';
-  const commandLine = `gpio export ${lockControlPinCode} ${operation}`;
+  const commandLine = `gpio export ${LOCK_CONTROL_PIN_CODE} ${operation}`;
   return execWithPromise(commandLine);
 }
 
 const initDoorStatusPin = async () => {
-  return execWithPromise(`gpio -g mode ${doorStatusPinCode} up`);
+  return execWithPromise(`gpio -g mode ${DOOR_STATUS_PIN_CODE} up`);
 };
 
 const readPinData = async () => {
@@ -87,9 +88,9 @@ const checkDoor = async () => {
   let autoLockCount = 0;
   setInterval(async () => {
     try {
-      let readLines = await readPinData(lockControlPinCode);
-      const isLock = getPinData(readLines, lockControlPinCode) === 1;
-      const isOpenDoor = getPinData(readLines, doorStatusPinCode) === 1;
+      let readLines = await readPinData(LOCK_CONTROL_PIN_CODE);
+      const isLock = getPinData(readLines, LOCK_CONTROL_PIN_CODE) === 1;
+      const isOpenDoor = getPinData(readLines, DOOR_STATUS_PIN_CODE) === 1;
 
       //////////////////////////////////////////////////////
       // 문이 닫혀 있고, 락이 안걸려 있다면 5초 후에 문을 자동으로 닫는다.
@@ -97,7 +98,7 @@ const checkDoor = async () => {
         autoLockCount++;
         console.log(`auto lock count: ${autoLockCount}`);
       }
-      if (autoLockCount >= 5) {
+      if (autoLockCount >= AUTO_LOCK_COUNT) {
         await operateDeadlockBolt(true);
         autoLockCount = 0;
         console.log('auto lock');
