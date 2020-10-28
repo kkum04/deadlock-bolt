@@ -7,8 +7,8 @@ router.get('/', function(req, res, next) {
   res.render('index');
 });
 
-const operateDeadlockBolt = async (isOpen) => {
-  const operation = isOpen === true ? 'low' : 'high';
+const operateDeadlockBolt = async (isLock) => {
+  const operation = isLock === true ? 'low' : 'high';
   const commandLine = `gpio export 21 ${operation}`;
   return new Promise(((resolve, reject) => {
     exec(commandLine, (error, stdout, stderr) => {
