@@ -80,10 +80,15 @@ const checkDoor = async () => {
 
 
       const lockControlPinData = readLines.find(line => {
-        console.dir(lockControlPinCode);
-        console.dir(line.split('\t')[0])
+        const splitLine = line
+          .replace(':', '')
+          .split(/(\s+)/)
+          .filter(it => it.length > 0);
 
-          return lockControlPinCode === line.split('\t')[0]
+        console.dir(lockControlPinCode);
+        console.dir(splitLine[0])
+
+          return lockControlPinCode == splitLine[0]
       });
 
       const doorStatusPinData = readLines.find(line =>
