@@ -64,7 +64,7 @@ const readPinData = async () => {
 }
 
 const getPinData = (readLines, pinCode) => {
-  return readLines.split('\n')
+  const pinData = readLines.split('\n')
     .map(it => it.trim())
     .map(it => it.replace(':', ''))
     .map(it => {
@@ -74,6 +74,7 @@ const getPinData = (readLines, pinCode) => {
     })
     .find(it => pinCode == it[0])
     [2];
+  return parseInt(pinData);
 }
 
 const checkDoor = async () => {
@@ -83,14 +84,25 @@ const checkDoor = async () => {
     throw e;
   }
 
+  let autoLockCount = 0;
   setInterval(async () => {
     try {
       let readLines = await readPinData(lockControlPinCode);
-      const lockControlPinData = getPinData(readLines, lockControlPinCode);
-      const doorStatusPinData = getPinData(readLines, doorStatusPinCode);
+      const isLock = getPinData(readLines, lockControlPinCode) === 1;
+      const isOpenDoor = getPinData(readLines, doorStatusPinCode) === 0;
 
-      console.log('lockControlPinData:' + lockControlPinData);
-      console.log('doorStatusPinData:' + doorStatusPinData);
+
+      //////////////////////////////////////////////////////
+      // 문이 닫혀 있고, 락이 안걸려 있다면 5초 후에 문을 자동으로 닫는다.
+      if (!isOpenDoor && !isLock) {
+        autoLockCount++;
+      }
+      if (autoLockCount >= 5) {
+        await operateDeadlockBolt(true);
+        autoLockCount = 0;
+      }
+      //////////////////////////////////////////////////////
+
     } catch (e) {
       console.error(e);
       console.error('Can not read pin data.');
