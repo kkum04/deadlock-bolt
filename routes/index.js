@@ -70,9 +70,9 @@ const checkDoor = async () => {
     throw e;
   }
 
-  setInterval(() => {
-    console.log(readPinData(lockControlPinCode));
-    console.log(readPinData(doorStatusPinCode));
+  setInterval(async () => {
+    console.log(await readPinData(lockControlPinCode));
+    console.log(await readPinData(doorStatusPinCode));
   }, 1000);
 }
 
