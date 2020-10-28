@@ -36,7 +36,7 @@ router.get('/lock', async function (req, res) {
   }
 });
 
-router.get('/unlock', function (req, res) {
+router.get('/unlock', async function (req, res) {
   try {
     const response = await operateDeadlockBolt(true);
     console.log(`닫힘: ${response}`);
