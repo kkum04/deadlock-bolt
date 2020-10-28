@@ -59,8 +59,8 @@ const initDoorStatusPin = async () => {
   return execWithPromise(`gpio -g mode ${doorStatusPinCode} up`);
 };
 
-const readPinData = async (pinCode) => {
-  return execWithPromise(`gpio read ${pinCode}`);
+const readPinData = async () => {
+  return execWithPromise(`gpio exports`);
 }
 
 const checkDoor = async () => {
@@ -71,8 +71,29 @@ const checkDoor = async () => {
   }
 
   setInterval(async () => {
-    console.log(await readPinData(lockControlPinCode));
-    console.log(await readPinData(doorStatusPinCode));
+    try {
+      let readLines = await readPinData(lockControlPinCode);
+      readLines = readLines.split('\n')
+        .map(it => it.trim());
+
+      const lockControlPinData = readLines.find(line =>
+        lockControlPinCode === line.split('\t')[0]
+      );
+
+      const doorStatusPinData = readLines.find(line =>
+        doorStatusPinCode === line.split('\t')[0]
+      );
+
+      console.log(lockControlPinData);
+      console.log(doorStatusPinData);
+    } catch (e) {
+      console.error(e);
+      console.error('Can not read pin data.');
+    }
+
+
+
+
   }, 1000);
 }
 
