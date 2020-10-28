@@ -2,44 +2,49 @@ const express = require('express');
 const { exec } = require("child_process");
 const router = express.Router();
 
-
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index');
 });
 
-router.get('/lock', function (req, res) {
-  exec('gpio export 21 high', (error, stdout, stderr) => {
-    if (error) {
-      res.status(500).send(`Unexpected Error`);
-      console.log(`error: ${error.message}`);
-      return;
-    }
-    if (stderr) {
-      res.status(500).send(`Unexpected Error`);
-      console.log(`stderr: ${stderr}`);
-      return;림
-    }
-    console.log(`닫힘: ${stdout}`);
+const operateDeadlockBolt = async (isOpen) => {
+  const operation = isOpen === true ? 'low' : 'high';
+  const commandLine = `gpio export 21 ${operation}`;
+  return new Promise(((resolve, reject) => {
+    exec(commandLine, (error, stdout, stderr) => {
+      if (error) {
+        return reject(error);
+      }
+      else if(stderr) {
+        return reject(stderr);
+      }
+
+      return resolve(stdout);
+    });
+  }));
+}
+
+
+router.get('/lock', async function (req, res) {
+  try {
+    const response = await operateDeadlockBolt(false);
+    console.log(`닫힘: ${response}`);
     res.status(200).send(`success`);
-  });
+  } catch (e) {
+    res.status(500).send(`Unexpected Error`);
+    console.error(`stderr: ${e}`);
+  }
 });
 
 router.get('/unlock', function (req, res) {
-  exec('gpio export 21 low', (error, stdout, stderr) => {
-    if (error) {
-      res.status(500).send(`Unexpected Error`);
-      console.log(`error: ${error.message}`);
-      return;
-    }
-    if (stderr) {
-      res.status(500).send(`Unexpected Error`);
-      console.log(`stderr: ${stderr}`);
-      return;
-    }
-    console.log(`열: ${stdout}`);
+  try {
+    const response = await operateDeadlockBolt(true);
+    console.log(`닫힘: ${response}`);
     res.status(200).send(`success`);
-  });
+  } catch (e) {
+    res.status(500).send(`Unexpected Error`);
+    console.error(`stderr: ${e}`);
+  }
 });
 
 module.exports = router;
