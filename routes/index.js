@@ -63,12 +63,13 @@ const readPinData = async () => {
   return execWithPromise(`gpio exports`);
 }
 
-const getPinData = (pinCode, readLines) => {
+const getPinData = (readLines, pinCode) => {
   return readLines.split('\n')
     .map(it => it.trim())
-    .replace(':', '')
+    .map(it => it.replace(':', ''))
     .map(it => {
       return it.split(/(\s+)/)
+        .map(it => it.trim())
         .filter(it => it.length > 0)
     })
     .find(it => pinCode == it[0])
@@ -94,9 +95,6 @@ const checkDoor = async () => {
       console.error(e);
       console.error('Can not read pin data.');
     }
-
-
-
 
   }, 1000);
 }
