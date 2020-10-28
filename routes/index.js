@@ -91,18 +91,18 @@ const checkDoor = async () => {
       const isLock = getPinData(readLines, lockControlPinCode) === 1;
       const isOpenDoor = getPinData(readLines, doorStatusPinCode) === 0;
 
-
       //////////////////////////////////////////////////////
       // 문이 닫혀 있고, 락이 안걸려 있다면 5초 후에 문을 자동으로 닫는다.
       if (!isOpenDoor && !isLock) {
         autoLockCount++;
+        console.log(`auto lock count: ${autoLockCount}`);
       }
       if (autoLockCount >= 5) {
         await operateDeadlockBolt(true);
         autoLockCount = 0;
+        console.log('auto lock');
       }
       //////////////////////////////////////////////////////
-
     } catch (e) {
       console.error(e);
       console.error('Can not read pin data.');
