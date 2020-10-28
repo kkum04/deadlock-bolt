@@ -13,7 +13,7 @@ router.get('/', function(req, res, next) {
 
 router.get('/lock', async function (req, res) {
   try {
-    const response = await operateDeadlockBolt(false);
+    const response = await operateDeadlockBolt(true);
     console.log(`닫힘: ${response}`);
     res.status(200).send(`success`);
   } catch (e) {
@@ -24,7 +24,7 @@ router.get('/lock', async function (req, res) {
 
 router.get('/unlock', async function (req, res) {
   try {
-    const response = await operateDeadlockBolt(true);
+    const response = await operateDeadlockBolt(false);
     console.log(`닫힘: ${response}`);
     res.status(200).send(`success`);
   } catch (e) {
@@ -50,7 +50,7 @@ const execWithPromise = async (commandLine) => {
 }
 
 const operateDeadlockBolt = async (isLock) => {
-  const operation = isLock === true ? 'low' : 'high';
+  const operation = isLock === true ? 'high' : 'low';
   const commandLine = `gpio export ${lockControlPinCode} ${operation}`;
   return execWithPromise(commandLine);
 }
@@ -89,7 +89,7 @@ const checkDoor = async () => {
     try {
       let readLines = await readPinData(lockControlPinCode);
       const isLock = getPinData(readLines, lockControlPinCode) === 1;
-      const isOpenDoor = getPinData(readLines, doorStatusPinCode) === 0;
+      const isOpenDoor = getPinData(readLines, doorStatusPinCode) === 1;
 
       //////////////////////////////////////////////////////
       // 문이 닫혀 있고, 락이 안걸려 있다면 5초 후에 문을 자동으로 닫는다.
