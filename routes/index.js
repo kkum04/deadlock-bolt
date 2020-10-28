@@ -76,9 +76,15 @@ const checkDoor = async () => {
       readLines = readLines.split('\n')
         .map(it => it.trim());
 
-      const lockControlPinData = readLines.find(line =>
-        lockControlPinCode === line.split('\t')[0]
-      );
+      console.dir(readLines);
+
+
+      const lockControlPinData = readLines.find(line => {
+        console.dir(lockControlPinCode);
+        console.dir(line.split('\t')[0])
+
+          return lockControlPinCode === line.split('\t')[0]
+      });
 
       const doorStatusPinData = readLines.find(line =>
         doorStatusPinCode === line.split('\t')[0]
