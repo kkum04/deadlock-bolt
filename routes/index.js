@@ -112,10 +112,15 @@ const checkDoor = async () => {
   }, 1000);
 }
 
-checkDoor()
-  .catch(error => {
-    console.error('An error is occurred in checkDoor().');
-    console.error(e);
-  });
+execWithPromise(`gpio export ${DOOR_STATUS_PIN_CODE} IN`)
+  .then(() => execWithPromise(`gpio export ${LOCK_CONTROL_PIN_CODE} OUT`))
+  .catch(error => console.error(error))
+  .then(() => {
+    checkDoor()
+      .catch(error => {
+        console.error('An error is occurred in checkDoor().');
+        console.error(e);
+      });
+  })
 
 module.exports = router;
