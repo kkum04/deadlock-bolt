@@ -97,6 +97,8 @@ const checkDoor = async () => {
       if (!isOpenDoor && !isLock) {
         autoLockCount++;
         console.log(`auto lock count: ${autoLockCount}`);
+      } else {
+        autoLockCount = 0;
       }
       if (autoLockCount >= AUTO_LOCK_COUNT) {
         await operateDeadlockBolt(true);
