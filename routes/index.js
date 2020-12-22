@@ -6,6 +6,7 @@ require('dotenv').config();
 const LOCK_CONTROL_PIN_CODE = process.env.LOCK_CONTROL_PIN_CODE;
 const DOOR_STATUS_PIN_CODE = process.env.DOOR_STATUS_PIN_CODE;
 const AUTO_LOCK_COUNT = process.env.AUTO_LOCK_COUNT;
+const DOOR_TYPE = process.env.DOOR_TYPE
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -14,7 +15,7 @@ router.get('/', function(req, res, next) {
 
 router.get('/lock', async function (req, res) {
   try {
-    const response = await operateDeadlockBolt(true);
+    const response = await closeDoor();
     console.log(`닫힘: ${response}`);
     res.status(200).send(`success`);
   } catch (e) {
@@ -25,7 +26,7 @@ router.get('/lock', async function (req, res) {
 
 router.get('/unlock', async function (req, res) {
   try {
-    const response = await operateDeadlockBolt(false);
+    const response = await openDoor();
     console.log(`닫힘: ${response}`);
     res.status(200).send(`success`);
   } catch (e) {
@@ -50,7 +51,20 @@ const execWithPromise = async (commandLine) => {
   }));
 }
 
-const operateDeadlockBolt = async (isLock) => {
+const openDoor = async () => {
+  await operateDoor(false)
+
+  if (DOOR_TYPE === "SLIDING_DOOR") {
+    setTimeout(() => closeDoor(), 3000)
+  }
+}
+
+const closeDoor = () => {
+  return operateDoor(true)
+}
+
+
+const operateDoor = async (isLock) => {
   const operation = isLock === true ? 'high' : 'low';
   const commandLine = `gpio export ${LOCK_CONTROL_PIN_CODE} ${operation}`;
   return execWithPromise(commandLine);
@@ -101,7 +115,7 @@ const checkDoor = async () => {
         autoLockCount = 0;
       }
       if (autoLockCount >= AUTO_LOCK_COUNT) {
-        await operateDeadlockBolt(true);
+        await operateDoor(true);
         autoLockCount = 0;
         console.log('auto lock');
       }
@@ -118,11 +132,13 @@ execWithPromise(`gpio export ${DOOR_STATUS_PIN_CODE} IN`)
   .then(() => execWithPromise(`gpio export ${LOCK_CONTROL_PIN_CODE} OUT`))
   .catch(error => console.error(error))
   .then(() => {
-    checkDoor()
-      .catch(error => {
-        console.error('An error is occurred in checkDoor().');
-        console.error(e);
-      });
+    if (DOOR_TYPE === "DEADLOCK_BOLT") {
+      checkDoor()
+        .catch(error => {
+          console.error('An error is occurred in checkDoor().');
+          console.error(e);
+        });
+    }
   })
 
 module.exports = router;
