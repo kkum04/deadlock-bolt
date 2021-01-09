@@ -148,6 +148,8 @@ const checkSwitch = () => {
     try {
       let readLines = await readPinData();
       const isOn = getPinData(readLines, 11) === 1;
+      console.log(`switch on: ${isOn}`);
+
       if (isOn) {
         await openDoor()
         console.log('Open')
