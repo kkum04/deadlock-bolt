@@ -158,7 +158,7 @@ const checkSwitch = () => {
       console.error('checkSwitch error')
       console.error(e)
     }
-  }, 10)
+  }, 100)
 }
 
 module.exports = router;
