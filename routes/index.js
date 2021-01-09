@@ -102,7 +102,7 @@ const checkDoor = async () => {
   let autoLockCount = 0;
   setInterval(async () => {
     try {
-      let readLines = await readPinData(LOCK_CONTROL_PIN_CODE);
+      let readLines = await readPinData();
       const isLock = getPinData(readLines, LOCK_CONTROL_PIN_CODE) === 1;
       const isOpenDoor = getPinData(readLines, DOOR_STATUS_PIN_CODE) === 1;
 
@@ -138,7 +138,25 @@ execWithPromise(`gpio export ${DOOR_STATUS_PIN_CODE} IN`)
           console.error('An error is occurred in checkDoor().');
           console.error(e);
         });
+
+      checkSwitch()
     }
   })
+
+const checkSwitch = () => {
+  setInterval(async () => {
+    try {
+      let readLines = await readPinData();
+      const isOn = getPinData(readLines, 11) === 1;
+      if (isOn) {
+        await openDoor()
+        console.log('Open')
+      }
+    } catch (e) {
+      console.error('checkSwitch error')
+      console.error(e)
+    }
+  }, 10)
+}
 
 module.exports = router;
