@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const LOCK_CONTROL_PIN_CODE = process.env.LOCK_CONTROL_PIN_CODE;
 const DOOR_STATUS_PIN_CODE = process.env.DOOR_STATUS_PIN_CODE;
+const DOOR_SWITCH_PIN_CODE = process.env.DOOR_SWITCH_PIN_CODE;
 const AUTO_LOCK_COUNT = process.env.AUTO_LOCK_COUNT;
 const DOOR_TYPE = process.env.DOOR_TYPE
 
@@ -139,7 +140,9 @@ execWithPromise(`gpio export ${DOOR_STATUS_PIN_CODE} IN`)
           console.error(e);
         });
 
-      checkSwitch()
+      checkSwitch(`gpio export ${DOOR_SWITCH_PIN_CODE} IN`)
+        .then(() => checkSwitch(`gpio -g mode ${DOOR_SWITCH_PIN_CODE} down`))
+        .then(() => checkSwitch())
     }
   })
 
@@ -147,7 +150,7 @@ const checkSwitch = () => {
   setInterval(async () => {
     try {
       let readLines = await readPinData();
-      const isOn = getPinData(readLines, 11) === 1;
+      const isOn = getPinData(readLines, DOOR_SWITCH_PIN_CODE) === 1;
       console.log(`switch on: ${isOn}`);
 
       if (isOn) {
