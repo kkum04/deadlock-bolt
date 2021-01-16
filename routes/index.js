@@ -105,10 +105,12 @@ const checkDoor = async () => {
     try {
       let readLines = await readPinData();
       //const isLock = getPinData(readLines, LOCK_CONTROL_PIN_CODE) === 1;
-      const isOpenDoor = getPinData(readLines, DOOR_STATUS_PIN_CODE) === 1;
-      if (!isOpenDoor) {
-        await closeDoor()
-      }
+      const doorsStatusData = getPinData(readLines, DOOR_STATUS_PIN_CODE) === 1;
+      execWithPromise(`gpio export 20 ${doorsStatusData}`)
+
+      // if (!isOpenDoor) {
+      //   await closeDoor()
+      // }
 
 
       //////////////////////////////////////////////////////
