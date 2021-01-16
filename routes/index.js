@@ -140,8 +140,8 @@ execWithPromise(`gpio export ${DOOR_STATUS_PIN_CODE} IN`)
           console.error(e);
         });
 
-      checkSwitch(`gpio export ${DOOR_SWITCH_PIN_CODE} IN`)
-        .then(() => checkSwitch(`gpio -g mode ${DOOR_SWITCH_PIN_CODE} down`))
+      execWithPromise(`gpio export ${DOOR_SWITCH_PIN_CODE} IN`)
+        .then(() => execWithPromise(`gpio -g mode ${DOOR_SWITCH_PIN_CODE} down`))
         .then(() => checkSwitch())
     }
   })
