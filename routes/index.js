@@ -151,9 +151,9 @@ const checkSwitch = () => {
     try {
       let readLines = await readPinData();
       const isOn = getPinData(readLines, DOOR_SWITCH_PIN_CODE) === 1;
-      console.log(`switch on: ${isOn}`);
 
       if (isOn) {
+        console.log(`switch is pushed`);
         await openDoor()
         console.log('Open')
       }
