@@ -104,28 +104,22 @@ const checkDoor = async () => {
   setInterval(async () => {
     try {
       let readLines = await readPinData();
-      //const isLock = getPinData(readLines, LOCK_CONTROL_PIN_CODE) === 1;
-      const doorsStatusData = getPinData(readLines, DOOR_STATUS_PIN_CODE) === 0 ? "high" : "low";
-      execWithPromise(`gpio export 20 ${doorsStatusData}`)
-
-      // if (!isOpenDoor) {
-      //   await closeDoor()
-      // }
-
+      const isLock = getPinData(readLines, LOCK_CONTROL_PIN_CODE) === 1;
+      const isOpenDoor = getPinData(readLines, DOOR_STATUS_PIN_CODE) === 1;
 
       //////////////////////////////////////////////////////
       // 문이 닫혀 있고, 락이 안걸려 있다면 5초 후에 문을 자동으로 닫는다.
-      // if (!isOpenDoor && !isLock) {
-      //   autoLockCount++;
-      //   console.log(`auto lock count: ${autoLockCount}`);
-      // } else {
-      //   autoLockCount = 0;
-      // }
-      // if (autoLockCount >= AUTO_LOCK_COUNT) {
-      //   await operateDoor(true);
-      //   autoLockCount = 0;
-      //   console.log('auto lock');
-      // }
+      if (!isOpenDoor && !isLock) {
+        autoLockCount++;
+        console.log(`auto lock count: ${autoLockCount}`);
+      } else {
+        autoLockCount = 0;
+      }
+      if (autoLockCount >= AUTO_LOCK_COUNT) {
+        await operateDoor(true);
+        autoLockCount = 0;
+        console.log('auto lock');
+      }
       //////////////////////////////////////////////////////
     } catch (e) {
       console.error(e);
