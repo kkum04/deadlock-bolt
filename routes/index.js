@@ -54,6 +54,8 @@ const openDoor = async () => {
 
   if (DOOR_TYPE === "SLIDING_DOOR") {
     setTimeout(() => closeDoor(), 3000)
+  } else {
+    setTimeout(() => closeDoor(), 1000)
   }
 }
 
